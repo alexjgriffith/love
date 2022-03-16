@@ -52,7 +52,9 @@
 #else
 #include <AL/alc.h>
 #include <AL/al.h>
+#ifndef LOVE_EMSCRIPTEN
 #include <AL/alext.h>
+#endif //LOVE_EMSCRIPTEN
 #endif
 
 namespace love

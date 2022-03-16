@@ -45,7 +45,8 @@
 #define LOVE_HAS_POSIX_SPAWN
 #endif
 #endif
-
+#elif defined(LOVE_EMSCRIPTEN)
+#include <emscripten.h>
 #ifdef LOVE_HAS_POSIX_SPAWN
 #include <spawn.h>
 #else
@@ -76,6 +77,8 @@ std::string System::getOS() const
 	return "Android";
 #elif defined(LOVE_LINUX)
 	return "Linux";
+#elif defined(LOVE_EMSCRIPTEN)
+	return "Web";        
 #else
 	return "Unknown";
 #endif
@@ -139,7 +142,14 @@ bool System::openURL(const std::string &url) const
 		// We can't tell what actually happens without waiting for
 		// the process to finish, which could take forever (literally).
 		return true;
-
+        
+#elif defined(LOVE_EMSCRIPTEN)
+	EM_ASM_INT({
+		window.open(UTF8ToString ($0));
+		return 0;
+	}, url.c_str());
+	return true;
+        
 #elif defined(LOVE_WINDOWS)
 
 	// Unicode-aware WinAPI functions don't accept UTF-8, so we need to convert.

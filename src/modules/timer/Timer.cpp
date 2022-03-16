@@ -34,6 +34,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
+#elif defined(LOVE_EMSCRIPTEN)
+#include <emscripten.h>
 #endif
 
 namespace love
@@ -184,7 +186,11 @@ double Timer::getTime()
 	rel.QuadPart = now.QuadPart - start.QuadPart;
 	return (double) rel.QuadPart / (double) freq.QuadPart;
 }
-
+#elif defined(LOVE_EMSCRIPTEN)
+double Timer::getTime()
+{
+	return emscripten_get_now() / 1000.0;
+}
 #endif
 
 } // timer

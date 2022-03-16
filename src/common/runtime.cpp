@@ -128,6 +128,7 @@ static bool luax_isfulllightuserdatasupported(lua_State *L)
 // (before a commit to 2.1 in 2020) cannot use lightuserdata with more than 47
 // bits whereas some newer arm64 architectures allow pointers which use more
 // than that.
+// FYI - Emscription modifications skipped
 static ObjectKey luax_computeloveobjectkey(lua_State *L, love::Object *object)
 {
 	// love objects should be allocated on the heap, and thus are subject

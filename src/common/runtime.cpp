@@ -133,7 +133,7 @@ static ObjectKey luax_computeloveobjectkey(lua_State *L, love::Object *object)
 {
 	// love objects should be allocated on the heap, and thus are subject
 	// to the alignment rules of operator new / malloc. Lua numbers (doubles)
-  	// can store up to 63 bits of information as long as the exponent is
+	// can store up to 63 bits of information as long as the exponent is
 	// guaranteed to not be all 0's (denormal) nor all 1's (infinity, NaN).
 	// We need all these conditions for using doubles to store pointers:
 	//  - Min pointer alignment is 2.
@@ -162,7 +162,7 @@ static ObjectKey luax_computeloveobjectkey(lua_State *L, love::Object *object)
 		luaL_error(L, "Cannot push love object to Lua: unexpected alignment "
 				   "(pointer is %p but alignment should be %d)", object, minalign);
 	}
-        key = (key & 0xC000000000000000ULL) ^ 0x4000000000000000ULL;
+  key = (key & 0xC000000000000000ULL) ^ 0x4000000000000000ULL;
 	key |= ((uint64_t)object >> 1) & 0x3FFFFFFFFFFFFFFFULL;
 	ObjectKey fkey;
 	memcpy(&fkey, &key, sizeof(fkey));

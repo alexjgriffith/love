@@ -39,6 +39,9 @@
 #endif
 #if defined(__ANDROID__)
 #	define LOVE_ANDROID 1
+#endif	
+#if defined(__EMSCRIPTEN__)
+#  define LOVE_EMSCRIPTEN 1
 #endif
 #if defined(__EMSCRIPTEN__)
 #  define LOVE_EMSCRIPTEN 1

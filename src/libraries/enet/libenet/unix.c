@@ -19,7 +19,7 @@
 #define ENET_BUILDING_LIB 1
 #include "enet/enet.h"
 
-#if defined (__APPLE__) || defined(__EMSCRIPTEN__)
+#if defined(__APPLE__) || defined(__EMSCRIPTEN__)
 #ifdef HAS_POLL
 #undef HAS_POLL
 #endif

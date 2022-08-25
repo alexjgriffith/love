@@ -46,11 +46,16 @@
 #include <OpenAL-Soft/alext.h>
 #endif
 #else
+#if LOVE_EMSCRIPTEN	
+#include <AL/alc.h>	
+#include <AL/al.h>	
+#else
 #include <AL/alc.h>
 #include <AL/al.h>
 #ifndef LOVE_EMSCRIPTEN
 #include <AL/alext.h>
 #endif // LOVE_EMSCRIPTEN
+#endif
 #endif
 
 namespace love

@@ -10,7 +10,7 @@ if (typeof ENVIRONMENT_IS_PTHREAD === 'undefined' || !ENVIRONMENT_IS_PTHREAD) {
 	    Module.removeRunDependency('IDBFS_sync');
 	  }
 	});
-
+  
 	window.addEventListener('beforeunload', function(event) {
 		FS.syncfs(false, function (err) {
 			if (err) {

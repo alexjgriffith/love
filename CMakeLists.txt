@@ -1826,13 +1826,13 @@ if(EMSCRIPTEN)
 		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=8 -s USE_SDL=2 -s FULL_ES2=1 -s INVOKE_RUN=0 --post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js")
 	endif()
  
-	add_executable(${LOVE_EXE_NAME} src/love.cpp)	
+	add_executable(${LOVE_EXE_NAME} src/love.cpp)
+
 	set(EMSCRIPTEN_ARGS	
 		"-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
 		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"	
 		"-s USE_SDL=2"
 		"-s MODULARIZE=1"
-                "-s MAIN_MODULE=1"
 		"-s EXPORT_NAME=\"'Love'\""	
 		"-s WASM=1"
 		"-s FULL_ES2=1"	
@@ -1848,7 +1848,13 @@ if(EMSCRIPTEN)
 			${EMSCRIPTEN_ARGS}
 			"-s USE_PTHREADS=1"
 			"-s PTHREAD_POOL_SIZE=8"	
-		)
+		      )
+       
+                      # set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+                      # set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+                      # find_package(Threads REQUIRED)
+                      # target_link_libraries(${LOVE_EXE_NAME} Threads::Threads)
+
 	endif()
 
 	target_link_libraries(${LOVE_EXE_NAME} ${LOVE_LIB_NAME} ${EMSCRIPTEN_ARGS})	

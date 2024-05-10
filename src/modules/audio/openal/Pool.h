@@ -46,9 +46,12 @@
 #include <OpenAL-Soft/alext.h>
 #endif
 #else
+// EMSCRIPTEN for some reason here duplicated includes
 #include <AL/alc.h>
 #include <AL/al.h>
+#ifndef LOVE_EMSCRIPTEN
 #include <AL/alext.h>
+#endif //LOVE_EMSCRIPTEN
 #endif
 
 namespace love

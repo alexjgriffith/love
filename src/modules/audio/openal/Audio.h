@@ -52,7 +52,9 @@
 #else
 #include <AL/alc.h>
 #include <AL/al.h>
+#ifndef LOVE_EMSCRIPTEN
 #include <AL/alext.h>
+#endif //LOVE_EMSCRIPTEN
 #endif
 
 namespace love
@@ -127,6 +129,8 @@ public:
 
 	bool getEffectID(const char *name, ALuint &id);
 
+       // The Pool.
+       Pool *pool;
 private:
 	void initializeEFX();
 	// The OpenAL device.
@@ -148,9 +152,6 @@ private:
 	std::stack<ALuint> slotlist;
 	int MAX_SCENE_EFFECTS = 64;
 	int MAX_SOURCE_EFFECTS = 64;
-
-	// The Pool.
-	Pool *pool;
 
 	class PoolThread: public thread::Threadable
 	{

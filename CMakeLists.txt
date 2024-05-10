@@ -59,6 +59,7 @@ else()
 	option(LOVE_JIT "Use LuaJIT" TRUE)
 endif()
 option(LOVE_MPG123 "Use mpg123" TRUE)
+option(LOVEJS_COMPAT "Make compatability version of love.js (ie without pthreads)")
 
 if(LOVE_JIT)
 	if(APPLE)
@@ -106,7 +107,6 @@ if(MEGA)
 	set(LOVE_LINK_DIRS ${SDL_LINK_DIR})
 
 	set(LOVE_LINK_LIBRARIES
-		${OPENGL_gl_LIBRARY}
 		${MEGA_FREETYPE}
 		${MEGA_LIBOGG}
 		${MEGA_LIBVORBISFILE}
@@ -142,6 +142,13 @@ if(MEGA)
 		)
 	endif()
 
+	if (NOT EMSCRIPTEN)
+		set(LOVE_LINK_LIBRARIES
+			${OPENGL_gl_LIBRARY}
+			${LOVE_LINK_LIBRARIES}
+		)
+	endif ()
+                  
 	if(LOVE_JIT)
 		set(LOVE_LUA_LIBRARY ${MEGA_LUAJIT_LIB})
 		# LOVE_EXTRA_DLLS are non-runtime DLLs which should be bundled with the
@@ -440,6 +447,15 @@ set(LOVE_SRC_MODULE_EVENT_SDL
 	src/modules/event/sdl/Event.cpp
 	src/modules/event/sdl/Event.h
 )
+
+if(EMSCRIPTEN)
+	if(LOVEJS_COMPAT)
+		set(LOVE_SRC_MODULE_EVENT_SDL
+			src/modules/event/sdl/Event_compat.cpp
+			src/modules/event/sdl/Event.h
+		)
+	endif()
+endif()
 
 set(LOVE_SRC_MODULE_EVENT
 	${LOVE_SRC_MODULE_EVENT_ROOT}
@@ -1801,8 +1817,45 @@ endif()
 #
 # love (executable)
 #
-add_executable(${LOVE_EXE_NAME} WIN32 src/love.cpp ${LOVE_RC})
-target_link_libraries(${LOVE_EXE_NAME} ${LOVE_LIB_NAME})
+
+if(EMSCRIPTEN)
+    # add_definitions is for other libraries
+	if(LOVEJS_COMPAT)
+		add_definitions("-s USE_SDL=2 -s FULL_ES2=1 -s INVOKE_RUN=0 --post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js")
+	else()
+		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=8 -s USE_SDL=2 -s FULL_ES2=1 -s INVOKE_RUN=0 --post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js")
+	endif()
+ 
+	add_executable(${LOVE_EXE_NAME} src/love.cpp)	
+	set(EMSCRIPTEN_ARGS	
+		"-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
+		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"	
+		"-s USE_SDL=2"
+		"-s MODULARIZE=1"	
+		"-s EXPORT_NAME=\"'Love'\""	
+		"-s WASM=1"
+		"-s FULL_ES2=1"	
+		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
+		"-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
+		"-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
+		"-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
+        "-lwebsocket.js" # websocket API
+	)
+
+	if(NOT LOVEJS_COMPAT)
+		set(EMSCRIPTEN_ARGS
+			${EMSCRIPTEN_ARGS}
+			"-s USE_PTHREADS=1"
+			"-s PTHREAD_POOL_SIZE=8"	
+		)
+	endif()
+
+	target_link_libraries(${LOVE_EXE_NAME} ${LOVE_LIB_NAME} ${EMSCRIPTEN_ARGS})	
+else()
+	add_executable(${LOVE_EXE_NAME} WIN32 src/love.cpp ${LOVE_RC})
+	target_link_libraries(${LOVE_EXE_NAME} ${LOVE_LIB_NAME})
+endif()
+
 set_target_properties(${LOVE_EXE_NAME} PROPERTIES C_VISIBILITY_PRESET hidden CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
 
 if(MSVC OR MINGW)

@@ -34,6 +34,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
+#elif defined(LOVE_EMSCRIPTEN)
+#include <emscripten.h>
 #endif
 
 namespace love
@@ -158,6 +160,12 @@ double Timer::getTime()
 	return ((double) rel * 1.0e-9) * (double) info.numer / (double) info.denom;
 }
 
+#elif defined(LOVE_EMSCRIPTEN)
+double Timer::getTime()
+{
+	return emscripten_get_now() / 1000.0;
+}  
+  
 #elif defined(LOVE_WINDOWS)
 
 static LARGE_INTEGER getTimeAbsolute()

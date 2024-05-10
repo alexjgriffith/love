@@ -36,7 +36,9 @@
 #else
 #include <AL/alc.h>
 #include <AL/al.h>
-#include <AL/alext.h>
+#ifndef LOVE_EMSCRIPTEN
+ #include <AL/alext.h>
+#endif // LOVE_EMSCRIPTEN
 #endif
 
 #include <vector>

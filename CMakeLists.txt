@@ -1830,7 +1830,7 @@ if(EMSCRIPTEN)
 
 	set(EMSCRIPTEN_ARGS	
 		"-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
-		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"	
+		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
 		"-s USE_SDL=2"
 		"-s MODULARIZE=1"
 		"-s EXPORT_NAME=\"'Love'\""	
@@ -1840,12 +1840,16 @@ if(EMSCRIPTEN)
 		"-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
 		"-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
 		"-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
-        "-lwebsocket.js" # websocket API
+                "-lwebsocket.js" # websocket API
+                 "-s EXPORTED_RUNTIME_METHODS=\"['getMemory']\""
+                ## "-s EXPORTED_FUNCTIONS=\"['_malloc']\""
+                "-ldylink.js"  "-s RELOCATABLE=1"
 	)
 
 	if(NOT LOVEJS_COMPAT)
 		set(EMSCRIPTEN_ARGS
-			${EMSCRIPTEN_ARGS}
+		  ${EMSCRIPTEN_ARGS}
+                  "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
 			"-s USE_PTHREADS=1"
 			"-s PTHREAD_POOL_SIZE=8"	
 		      )

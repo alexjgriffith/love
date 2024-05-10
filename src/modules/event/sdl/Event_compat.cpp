@@ -863,7 +863,7 @@ std::map<SDL_Keycode, love::keyboard::Keyboard::Key> Event::createKeyMap()
 	k[SDLK_EJECT] = Keyboard::KEY_EJECT;
 	k[SDLK_SLEEP] = Keyboard::KEY_SLEEP;
 
-#ifdefqq LOVE_ANDROID
+#ifdef LOVE_ANDROID
 	k[SDLK_AC_BACK] = Keyboard::KEY_ESCAPE;
 #endif
 

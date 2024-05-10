@@ -1831,7 +1831,8 @@ if(EMSCRIPTEN)
 		"-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
 		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"	
 		"-s USE_SDL=2"
-		"-s MODULARIZE=1"	
+		"-s MODULARIZE=1"
+                "-s MAIN_MODULE=1"
 		"-s EXPORT_NAME=\"'Love'\""	
 		"-s WASM=1"
 		"-s FULL_ES2=1"	

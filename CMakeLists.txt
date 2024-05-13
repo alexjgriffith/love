@@ -1820,10 +1820,10 @@ endif()
 
 if(EMSCRIPTEN)
     # add_definitions is for other libraries
-	if(LOVEJS_COMPAT)
-		add_definitions("-s USE_SDL=2 -s FULL_ES2=1 -s INVOKE_RUN=0 --post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js")
+    if(LOVEJS_COMPAT)
+		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0" )
 	else()
-		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=8 -s USE_SDL=2 -s FULL_ES2=1 -s INVOKE_RUN=0 --post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js")
+		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s FULL_ES2=1 -s INVOKE_RUN=0")
 	endif()
  
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
@@ -1831,9 +1831,8 @@ if(EMSCRIPTEN)
 	set(EMSCRIPTEN_ARGS	
 		"-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
 		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
-		"-s USE_SDL=2"
 		"-s MODULARIZE=1"
-		"-s EXPORT_NAME=\"'Love'\""	
+		"-s EXPORT_NAME=\"'Love'\""
 		"-s WASM=1"
 		"-s FULL_ES2=1"	
 		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
@@ -1841,9 +1840,9 @@ if(EMSCRIPTEN)
 		"-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
 		"-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
                 "-lwebsocket.js" # websocket API
-                 "-s EXPORTED_RUNTIME_METHODS=\"['getMemory']\""
-                ## "-s EXPORTED_FUNCTIONS=\"['_malloc']\""
-                "-ldylink.js"  "-s RELOCATABLE=1"
+                "-ldylink.js" # getMemory
+                "-s EXPORTED_RUNTIME_METHODS=\"['getMemory']\""
+                "-s RELOCATABLE=1" # needed ldylink.js
 	)
 
 	if(NOT LOVEJS_COMPAT)
@@ -1851,7 +1850,7 @@ if(EMSCRIPTEN)
 		  ${EMSCRIPTEN_ARGS}
                   "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
 			"-s USE_PTHREADS=1"
-			"-s PTHREAD_POOL_SIZE=8"	
+			"-s PTHREAD_POOL_SIZE=4"	
 		      )
        
                       # set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

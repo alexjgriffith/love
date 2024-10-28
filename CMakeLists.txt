@@ -1291,6 +1291,23 @@ set(LOVE_SRC_3P_DRFLAC
 
 # dr_flac has no implementation files of its own.
 
+
+if(EMSCRIPTEN)
+#
+# js_http
+#
+
+set(LOVE_SRC_3P_JSHTTP
+  src/libraries/js_http.cpp
+  src/libraries/js_http.h)
+
+add_library(love_3p_jshttp ${LOVE_SRC_3P_JSHTTP})
+
+endif()
+
+# dr_flac has no implementation files of its own.
+
+
 #
 # enet
 #
@@ -1738,7 +1755,9 @@ set(LOVE_3P
 	love_3p_physfs
 	love_3p_wuff
 	love_3p_xxhash
-)
+        love_3p_jshttp # if emscirpten
+      )
+      
 
 love_disable_warnings(love_3p_box2d love_3p_enet love_3p_luasocket love_3p_physfs)
 
@@ -1827,11 +1846,12 @@ if(EMSCRIPTEN)
 	endif()
  
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
-
+        ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
 		"-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
 		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
-		"-s MODULARIZE=1"
+                "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/libraries/js_http/js_http.js"
+                "-s MODULARIZE=1"
 		"-s EXPORT_NAME=\"'Love'\""
 		"-s WASM=1"
 		"-s FULL_ES2=1"	

@@ -1838,7 +1838,7 @@ endif()
 if(EMSCRIPTEN)
   # add_definitions is for other libraries
 
-  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  ##set(CMAKE_EXECUTABLE_SUFFIX ".html")
     if(LOVEJS_COMPAT)
 		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0" )
 	else()
@@ -1849,15 +1849,15 @@ if(EMSCRIPTEN)
         ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
 		## "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
-		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
+		## "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
                 "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/libraries/js_http/js_http.js"
-                ## "-s MODULARIZE=1"
+                "-s MODULARIZE=1"
 		"-s EXPORT_NAME=\"'Love'\""
 		## "-s WASM=1"
 		## "-s FULL_ES2=1"
-                "-sMAIN_MODULE=1"
-                "--embed-file ../game/@/"
-		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
+                ## "-sMAIN_MODULE=1"
+                "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
+		## "-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
 		"-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
                 "-s ALLOW_TABLE_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
 		"-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
@@ -1866,6 +1866,7 @@ if(EMSCRIPTEN)
                 "-ldylink.js" # getMemory
                 "-sEXPORTED_RUNTIME_METHODS=getMemory,stringToNewUTF8"
                 "-s RELOCATABLE=1" # needed ldylink.js
+                "-sMINIFY_HTML=0" 
 	)
 
 	if(NOT LOVEJS_COMPAT)

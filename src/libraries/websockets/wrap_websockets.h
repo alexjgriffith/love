@@ -1,0 +1,6 @@
+#ifndef LOVE_WEBSOCKETS_WEBSOCKETS_H
+#define LOVE_WEBSOCKETS_WEBSOCKETS_H
+
+int luaopen_websockets (lua_State *L);
+
+#endif //LOVE_WEBSOCKETS_WEBSOCKETS_H

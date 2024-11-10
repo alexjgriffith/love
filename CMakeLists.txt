@@ -1840,41 +1840,54 @@ if(EMSCRIPTEN)
 
   ##set(CMAKE_EXECUTABLE_SUFFIX ".html")
     if(LOVEJS_COMPAT)
-		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0" )
+		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2 -sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval" )
 	else()
-		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s FULL_ES2=1 -s INVOKE_RUN=0")
+		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2 -sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval")
 	endif()
- 
+
+        set(CMAKE_EXECUTABLE_SUFFIX ".html")
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
         ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
-		## "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
-		"--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
-                "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/libraries/js_http/js_http.js"
-                "-s MODULARIZE=1"
-		"-s EXPORT_NAME=\"'Love'\""
-		"-s WASM=1"
-		"-s FULL_ES2=1"
+                "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/test-filesystem.js"
+                "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
+                "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/shell.html"
+		"-sFULL_ES2=1" ## we get webgl errors without this
+                "-sUSE_SDL=2"
+                "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
+                ## "-sMINIFY_HTML=0"
+                ## "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
+		## "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
+                ## "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/libraries/js_http/js_http.js"
+                ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/"
+                ## -sSINGLE_FILE
+                ## "--use-preload-plugins"
+                ## "-s MODULARIZE=1"
+		## "-s EXPORT_NAME=\"'Love'\""
+                ##"-sFORCE_FILESYSTEM"
+                ## "-sWASMFS"
+		## "-s WASM=1"
                 ## "-sMAIN_MODULE=1"
                 ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
-		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
-		"-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
+		## "-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
                 ## "-s ALLOW_TABLE_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
-		"-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
-		"-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
+		## "-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
+		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
                 ## "-lwebsocket.js" # websocket API
-                "-ldylink.js" # getMemory
-                "-sEXPORTED_RUNTIME_METHODS=getMemory,stringToNewUTF8"
-                "-s RELOCATABLE=1" # needed ldylink.js
-                "-sMINIFY_HTML=0" 
+                ## "-ldylink.js" # getMemory
+                ## "-sEXPORTED_RUNTIME_METHODS=getMemory,stringToNewUTF8,ccall,cwrap,UTF8ToString"
+                ##"-sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval"
+                ## "-s RELOCATABLE=1" # needed ldylink.js
+                ## "-sEXPORTED_RUNTIME_METHODS=_emscripten_dlsync_threads"
+                ## _emscripten_dlsync_threads
 	)
 
 	if(NOT LOVEJS_COMPAT)
 		set(EMSCRIPTEN_ARGS
 		  ${EMSCRIPTEN_ARGS}
-                  "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
-			"-s USE_PTHREADS=1"
-			"-s PTHREAD_POOL_SIZE=4"	
+                  ## "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
+		  "-s USE_PTHREADS=1"
+		  "-s PTHREAD_POOL_SIZE=4"	
 		      )
        
                       # set(CMAKE_THREAD_PREFER_PTHREAD TRUE)

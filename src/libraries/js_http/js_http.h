@@ -3,4 +3,4 @@
 
 int luaopen_js_http (lua_State *L);
 
-#endif LOVE_HTTP_HTTP_H
+#endif //LOVE_HTTP_HTTP_H

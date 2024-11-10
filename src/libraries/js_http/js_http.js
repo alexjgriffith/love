@@ -1,7 +1,11 @@
-//R"JS_String"//(
+R"JS_String"//(
+const stringToNewUTF8 = ModuleArgs.stringToNewUTF8;
+const UTF8ToString = ModuleArgs.UTF8ToString;
+
 var __LOVE2D_lua_state_ptr = null;
 
 function __LOVE2D_set_lua_state_ptr (ptr){
+    console.log("state ptr:" + ptr)
     __LOVE2D_lua_state_ptr = ptr;
 }
 
@@ -28,7 +32,7 @@ function __LOVE2D_http_request (ptr, handle, root, endpoint, action, headers, da
             __JS_http_push_event(ptr,
                                  stringToNewUTF8(UTF8ToString(handle)),
                                  stringToNewUTF8(xhttp.responseText),
-                                 stringToNewUTF8("{}"));
+                                 stringToNewUTF8('{}'));
         }
     };    
     if (headers != null) {
@@ -40,7 +44,7 @@ function __LOVE2D_http_request (ptr, handle, root, endpoint, action, headers, da
         xhttp.open(UTF8ToString(action), path, true);
     }
     else {
-        xhttp.open("GET", path, true);
+        xhttp.open('GET', path, true);
     }
     
     if (data != null){

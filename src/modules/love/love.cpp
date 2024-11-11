@@ -64,7 +64,7 @@
 #	include "libraries/enet/lua-enet.h"
 #endif
 #ifdef __EMSCRIPTEN__
-#	include "libraries/js_http/js_http.h"
+#	include "libraries/js/js.h"
 #	include "libraries/websockets/wrap_websockets.h"
 #endif
 #ifdef LOVE_ENABLE_LUA53
@@ -530,7 +530,7 @@ int luaopen_love(lua_State *L)
 	love::luax_preload(L, luaopen_enet, "enet");
 #endif
 #ifdef EMSCRIPTEN
-	love::luax_preload(L, luaopen_js_http, "js_http");
+	love::luax_preload(L, luaopen_js, "js");
         love::luax_preload(L, luaopen_websockets, "websockets");
 #endif        
 #ifdef LOVE_ENABLE_LUA53

@@ -1294,15 +1294,15 @@ set(LOVE_SRC_3P_DRFLAC
 
 if(EMSCRIPTEN)
 #
-# js_http
+# js
 #
 
-set(LOVE_SRC_3P_JSHTTP
-  src/libraries/js_http/js_http.cpp
-  src/libraries/js_http/js_http.h)
+set(LOVE_SRC_3P_JS
+  src/libraries/js/js.cpp
+  src/libraries/js/js.h)
 
-add_library(love_3p_jshttp ${LOVE_SRC_3P_JSHTTP})
-target_link_libraries(love_3p_jshttp ${LOVE_LUA_LIBRARY})
+add_library(love_3p_js ${LOVE_SRC_3P_JS})
+target_link_libraries(love_3p_js ${LOVE_LUA_LIBRARY})
 
 #
 # websockets
@@ -1764,7 +1764,7 @@ set(LOVE_3P
 	love_3p_physfs
 	love_3p_wuff
 	love_3p_xxhash
-        love_3p_jshttp # if emscirpten
+        love_3p_js # if emscirpten
         love_3p_websockets
       )
       
@@ -1849,12 +1849,11 @@ endif()
 
 if(EMSCRIPTEN)
   # add_definitions is for other libraries
-
   ##set(CMAKE_EXECUTABLE_SUFFIX ".html")
     if(LOVEJS_COMPAT)
-		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2 -sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval" )
+		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2")
 	else()
-		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2 -sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval")
+		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2")
 	endif()
 
         set(CMAKE_EXECUTABLE_SUFFIX ".html")

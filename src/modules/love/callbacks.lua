@@ -121,7 +121,8 @@ function love.createhandlers()
 			if love.displayrotated then return love.displayrotated(display, orient) end
 		end,
                 userevent = function (name,data,code)
-			if love.userevent then return love.userevent(name,data,code) end
+                   -- if pcall(function() love.handlers[name] end) then return love.event.push(name,data,code) end
+                   if love.userevent then return love.userevent(name,data,code) end
 		end,
 	}, {
 		__index = function(self, name)

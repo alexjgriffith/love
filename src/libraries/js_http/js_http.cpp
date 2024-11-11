@@ -102,6 +102,23 @@ int JS_http_request (lua_State *L){
   return 0;
 }
 
+EMSCRIPTEN_KEEPALIVE
+int JS_send_event (char * handle, char * data, int code){
+  SDL_Event event;
+  event.type = SDL_USEREVENT;
+  event.user.data1 = (char *) malloc(SDL_strlen(handle) );
+  SDL_memcpy(event.user.data1,handle,SDL_strlen(handle));
+  ((char *) event.user.data1)[SDL_strlen(handle)] = '\0';
+  event.user.data2 = (char *) malloc(SDL_strlen(data) );
+  SDL_memcpy(event.user.data2,data,SDL_strlen(data));
+  ((char *) event.user.data2)[SDL_strlen(data)] = '\0';
+  event.user.code = code;
+  SDL_PushEvent(&event);
+  // handle and data get freed when this call ends
+  return 0;
+}
+
+  
 int JS_init (lua_State *L){
   //emscripten_run_script(js_http_javascript);
   JS_set_lua_ptr(L);

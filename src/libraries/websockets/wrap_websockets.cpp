@@ -1,74 +1,171 @@
-#include <emscripten.h>
-#include <websocket.h>
 
+// EMSCRIPTEN
+#include <emscripten.h>
+#include <emscripten/websocket.h>
+
+// SDL
+#include <SDL_events.h>
+
+// LUA
 extern "C" {
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
+
+#include <stdio.h> // debuging only
+  
+int w_emscripten_websocket_push_event (char * name, char * data, int code){
+  SDL_Event event;
+  event.type = SDL_USEREVENT;
+  event.user.data1 = name;
+  event.user.data2 = data;
+  event.user.code = code;
+  SDL_PushEvent(&event);
+  return 0;
+}
+
+char * _w_emscripten_websocket_make_name (const char * name_string){
+  char * name = (char *) SDL_malloc(SDL_strlen(name_string) + 1);
+  SDL_memcpy(name, name_string, SDL_strlen(name_string) + 1);
+  name[SDL_strlen(name_string) + 1]='\0';
+  return name;
+}
+
+bool w_emscripten_websocket_onopen_callback
+(int eventType, const EmscriptenWebSocketOpenEvent *websocketEvent, void *userData) {
+  char * name = _w_emscripten_websocket_make_name("websocketopen");
+  char * message = _w_emscripten_websocket_make_name("");
+  w_emscripten_websocket_push_event (name,message,websocketEvent->socket);
+  // freed during push event, maybe free here instead?
+  return EM_TRUE;
+}
+
+bool w_emscripten_websocket_onerror_callback
+(int eventType, const EmscriptenWebSocketErrorEvent *websocketEvent, void *userData) {
+  char * name = _w_emscripten_websocket_make_name("websocketerror");
+  char * message = _w_emscripten_websocket_make_name("");
+  w_emscripten_websocket_push_event (name,message,websocketEvent->socket);
+  return EM_TRUE;
+}
+
+bool w_emscripten_websocket_onclose_callback
+(int eventType, const EmscriptenWebSocketCloseEvent *websocketEvent, void *userData) {
+  const char format [64] = "{\"wasClean\":%d, \"reason\":\"%s\", \"code\":%hu}";
+  char * name = _w_emscripten_websocket_make_name("websocketclose");
+  char * message;
+  SDL_asprintf(&message,format,websocketEvent->wasClean, websocketEvent->reason, websocketEvent->code);
+  w_emscripten_websocket_push_event (name , message, websocketEvent->socket);
+  return EM_TRUE;
+}
+
+bool w_emscripten_websocket_onmessage_callback
+(int eventType, const EmscriptenWebSocketMessageEvent *websocketEvent, void *userData) {
+  char * name;
+  char * message;
+  printf("pre-memcopy: %s\n", (char *) websocketEvent->data);
+  if(websocketEvent->isText){
+    name = _w_emscripten_websocket_make_name("websocketmessage");
+    message = (char *) SDL_malloc(websocketEvent->numBytes + 1);
+    // does the emscripten_websocket free its own events?
+    SDL_memcpy(message,websocketEvent->data,websocketEvent->numBytes + 1);
+    printf("post-memcopy: %s\n", message);
+    w_emscripten_websocket_push_event (name , message, websocketEvent->socket);
+  }
+  return EM_TRUE;
 }
 
 int w_emscripten_websocket_get_ready_state(lua_State *L){
-  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *ws) lua_touserdata(L,1);
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
   unsigned short readyState;
   emscripten_websocket_get_ready_state(*ws, &readyState);
-  lua_pushinteger(readyState);
+  lua_pushnumber(L,readyState);
   return 1;
 }
 
 int w_emscripten_websocket_get_buffered_amount(lua_State *L){
-  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *ws) lua_touserdata(L,1);
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
   size_t bufferedAmount;
   emscripten_websocket_get_buffered_amount(*ws, &bufferedAmount);
-  lua_pushinteger(L, bufferedAmount);
+  lua_pushnumber(L, bufferedAmount);
   return 1;
 }
 
 int w_emscripten_websocket_get_url(lua_State *L){
-  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *ws) lua_touserdata(L,1);
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
   int length;
   emscripten_websocket_get_url_length(*ws, &length);
-  const char * str = malloc (sizeof(char) * length);
+  char * str = (char *)  SDL_malloc (sizeof(char) * length);
   emscripten_websocket_get_url(*ws, str, length);
   lua_pushstring(L, str);
-  free(str);
+  SDL_free(str);
   return 1;
 }
 
 int w_emscripten_websocket_get_extensions(lua_State *L){
-
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
+  int length;
+  emscripten_websocket_get_extensions_length(*ws, &length);
+  char * str = (char *) SDL_malloc (sizeof(char) * length);
+  emscripten_websocket_get_extensions(*ws, str, length);
+  lua_pushstring(L, str);
+  SDL_free(str);
   return 1;
 }
 
 int w_emscripten_websocket_get_protocol(lua_State *L){
-
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
+  int length;
+  emscripten_websocket_get_protocol_length(*ws, &length);
+  char * str = (char *) SDL_malloc (sizeof(char) * length);
+  emscripten_websocket_get_protocol(*ws, str, length);
+  lua_pushstring(L, str);
+  SDL_free(str);
   return 1;
 }
 
-
 int w_emscripten_websocket_send_utf8_text(lua_State *L){
-
-  return 1;
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
+  const char *textData = lua_tostring(L,2);
+  emscripten_websocket_send_utf8_text(*ws,textData);
+  return 0;
 }
 
 int w_emscripten_websocket_send_utf8_binary(lua_State *L){
-
-  return 1;
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
+  // need to find a way to get void* out of lua
+  // void *binaryData = lua_tostring(L,2);
+  // emscripten_websocket_send_utf8_binary(*ws, binaryData);
+  return 0;
 }
 
 int w_emscripten_websocket_send_close(lua_State *L){
-
-  return 1;
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
+  unsigned short code = lua_tonumber(L,2);
+  const char *reason = lua_tostring(L,3);
+  emscripten_websocket_close(*ws,code,reason);
+  return 0;
 }
 
 int w_emscripten_websocket_delete(lua_State *L){
-
-  return 1;
+  EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_touserdata(L,1);
+  emscripten_websocket_delete(*ws);
+  return 0;
 }
 
 int w_emscripten_websocket_new(lua_State *L){
   const char * address = luaL_checkstring (L, 1);
-  const char * protocols = luaL_checkstring (L, 2);
-  bool main_thread = lua_toboolean(L, 3);
+  int n = lua_gettop(L);
+  const char * protocols = NULL;
+  if (n > 1 && lua_isstring (L, 2)){
+    protocols = luaL_checkstring (L, 2);
+  }
+  bool main_thread;
+  if ( n > 2 && lua_isboolean(L, 3)){
+    main_thread = lua_toboolean(L,3);
+  }
+  else{
+    main_thread = 0;
+  }
   // if these attrs need to stick around we can make them into
   // another user data.
   EmscriptenWebSocketCreateAttributes ws_attrs = {
@@ -78,6 +175,10 @@ int w_emscripten_websocket_new(lua_State *L){
   };
   EMSCRIPTEN_WEBSOCKET_T *ws = (EMSCRIPTEN_WEBSOCKET_T *) lua_newuserdata(L, sizeof(EMSCRIPTEN_WEBSOCKET_T));
   *ws = emscripten_websocket_new(&ws_attrs);
+  emscripten_websocket_set_onopen_callback(*ws, NULL, w_emscripten_websocket_onopen_callback);
+  emscripten_websocket_set_onerror_callback(*ws, NULL, w_emscripten_websocket_onerror_callback);
+  emscripten_websocket_set_onclose_callback(*ws, NULL, w_emscripten_websocket_onclose_callback);
+  emscripten_websocket_set_onmessage_callback(*ws, NULL, w_emscripten_websocket_onmessage_callback);
   luaL_getmetatable(L,"*WEBSOCKET");
   lua_setmetatable(L, -2);
   return 1;
@@ -90,12 +191,14 @@ int w_emscripten_websocket_deinitialize(lua_State *L){
 
 int w_emscripten_websocket_is_supported(lua_State *L){
   bool is_supported = emscripten_websocket_is_supported();
-  lua_pushboolean(is_supported);
+  lua_pushboolean(L,is_supported);
   return 1;
 }
 
+} // extern C
+
 //library to be registe red
-static const struct luaL_Reg w_emscripten_funcs [] = {
+static const struct luaL_Reg w_emscripten_websocket_funcs [] = {
   {"new", w_emscripten_websocket_new},
   {"deinitialize", w_emscripten_websocket_deinitialize},
   {"supported", w_emscripten_websocket_is_supported},
@@ -122,9 +225,9 @@ static void w_emscripten_websocket_createmeta (lua_State *L){
   luaL_register(L, NULL, w_emscripten_websocket_lib);
 }
   
-int luaopen_js_http (lua_State *L)
+int luaopen_websockets (lua_State *L)
 {
   w_emscripten_websocket_createmeta(L);
-  luaL_register(L,"emscripten", w_emscripten_funcs);
+  luaL_register(L,"websockets", w_emscripten_websocket_funcs);
   return 1;
 }

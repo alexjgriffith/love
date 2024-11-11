@@ -1304,6 +1304,17 @@ set(LOVE_SRC_3P_JSHTTP
 add_library(love_3p_jshttp ${LOVE_SRC_3P_JSHTTP})
 target_link_libraries(love_3p_jshttp ${LOVE_LUA_LIBRARY})
 
+#
+# websockets
+#
+
+set(LOVE_SRC_3P_WEBSOCKETS
+  src/libraries/websockets/wrap_websockets.cpp
+  src/libraries/websockets/wrap_websockets.h)
+
+add_library(love_3p_websockets ${LOVE_SRC_3P_WEBSOCKETS})
+target_link_libraries(love_3p_websockets ${LOVE_LUA_LIBRARY})
+
 endif()
 
 #
@@ -1754,6 +1765,7 @@ set(LOVE_3P
 	love_3p_wuff
 	love_3p_xxhash
         love_3p_jshttp # if emscirpten
+        love_3p_websockets
       )
       
 
@@ -1849,12 +1861,15 @@ if(EMSCRIPTEN)
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
         ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
-                "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/test-filesystem.js"
+                "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-arguments.js"
+                "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-js-api.js"
                 "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
                 "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/shell.html"
 		"-sFULL_ES2=1" ## we get webgl errors without this
                 "-sUSE_SDL=2"
                 "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
+                "-lwebsocket.js" # websocket API
+                "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,ccall,cwrap,UTF8ToString"
                 ## "-sMINIFY_HTML=0"
                 ## "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
 		## "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
@@ -1873,7 +1888,6 @@ if(EMSCRIPTEN)
                 ## "-s ALLOW_TABLE_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
 		## "-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
 		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
-                ## "-lwebsocket.js" # websocket API
                 ## "-ldylink.js" # getMemory
                 ## "-sEXPORTED_RUNTIME_METHODS=getMemory,stringToNewUTF8,ccall,cwrap,UTF8ToString"
                 ##"-sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval"

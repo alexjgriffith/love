@@ -35,6 +35,10 @@
 
 #include <cmath>
 
+// #ifdef __EMSCRIPTEN__
+// #include <memory>
+// #endif // __EMSCRIPTEN__
+
 namespace love
 {
 namespace event
@@ -453,17 +457,19 @@ Message *Event::convert(const SDL_Event &e)
 		break;
 #ifdef __EMSCRIPTEN__
         case SDL_USEREVENT:
-                int code = e->code;
                 // data1 and data2 could be of any type var *
                 // for easue of use we are only going to accept
                 // *
                 // we could add a custom case for each e->code;
-                char * name = (char *) e->data1;
-                char * data = (char *) e->data2;
-                vargs.emplace_back(name, strlen(name));
-                vargs.emplace_back(data, strlen(data));
-                vargs.emplace_back(code);
+                // how do we handle the memory created?
+                txt = (const char *) e.user.data1;
+                txt2 = (const char *) e.user.data2;
+                vargs.emplace_back(txt, strlen(txt));
+                vargs.emplace_back(txt2, strlen(txt2));
+                vargs.emplace_back((double) e.user.code);
                 msg = new Message("userevent", vargs);
+                SDL_free(e.user.data1);
+                SDL_free(e.user.data2);
                 break;
 #endif // __EMSCIRPTEN__                
 	default:

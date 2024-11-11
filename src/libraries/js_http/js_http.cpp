@@ -1,6 +1,10 @@
 #include <emscripten.h>
 #include <stdio.h>
 
+// SDL
+#include <SDL_events.h>
+
+
 extern "C" {
 #include "lua.h"
 #include "lualib.h"
@@ -103,13 +107,38 @@ int JS_init (lua_State *L){
   JS_set_lua_ptr(L);
   return 0;
 }
+
+int example_event (lua_State *L){
+  SDL_Event event;
+  event.type = SDL_USEREVENT;
+  event.user.data1 = (char *) malloc(sizeof(char) * 16);
+  event.user.data2 = (char *) malloc(sizeof(char) * 16);
+  ((char *) event.user.data1)[0]='t';
+  ((char *) event.user.data1)[1]='e';
+  ((char *) event.user.data1)[2]='s';
+  ((char *) event.user.data1)[3]='t';
+  ((char *) event.user.data1)[4]='\0';
+  ((char *) event.user.data2)[0]='d';
+  ((char *) event.user.data2)[1]='a';
+  ((char *) event.user.data2)[2]='t';
+  ((char *) event.user.data2)[3]='a';
+  ((char *) event.user.data2)[4]='\0';
+  event.user.code = 0;
+  SDL_PushEvent(&event);
+  return 0;
 }
+  
+  
+} // extern C
+
+
 
 //library to be registe red
 static const struct luaL_Reg JS_http_funcs [] = {
   {"make", JS_make_http},
   {"init", JS_init},
   {"call", JS_call},
+  {"example-event", example_event},
   {NULL, NULL}        // sentinel */
 };
 

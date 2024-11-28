@@ -436,6 +436,23 @@ Message *Event::convert(const SDL_Event &e)
 	case SDL_APP_LOWMEMORY:
 		msg = new Message("lowmemory");
 		break;
+#ifdef __EMSCRIPTEN__
+        case SDL_USEREVENT:
+                // data1 and data2 could be of any type var *
+                // for easue of use we are only going to accept
+                // *
+                // we could add a custom case for each e->code;
+                // how do we handle the memory created?
+                txt = (const char *) e.user.data1;
+                txt2 = (const char *) e.user.data2;
+                vargs.emplace_back(txt, strlen(txt));
+                vargs.emplace_back(txt2, strlen(txt2));
+                vargs.emplace_back((double) e.user.code);
+                msg = new Message("userevent", vargs);
+                SDL_free(e.user.data1);
+                SDL_free(e.user.data2);
+                break;
+#endif // __EMSCIRPTEN__
 	default:
 		break;
 	}

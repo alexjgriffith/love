@@ -3,12 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>LOVEJS SHell</title>
+    <title>LOVEJS</title>
   </head>
   <body style="margin:0px;">
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-
-    <textarea style="display:block; width:100%;" id="output" rows="8"></textarea>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script type='text/javascript'>
       // love2d stuff
@@ -35,7 +33,10 @@
 
           return canvas;
         })(),
-        setStatus: (text) => {
+          setStatus: (text) => {
+              const event = new CustomEvent("love2dStatusUpdate", {detail: text});
+              var canvas = document.getElementById("canvas");
+              canvas.dispatchEvent(event);
         },
         totalDependencies: 0,
         monitorRunDependencies: (left) => {
@@ -53,6 +54,7 @@
         };
       };
     </script>
+    <script src=preload.js></script>
     {{{ SCRIPT }}}
   </body>
 </html>

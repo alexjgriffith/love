@@ -121,7 +121,6 @@ function love.createhandlers()
 			if love.displayrotated then return love.displayrotated(display, orient) end
 		end,
                 userevent = function (name,data,code)
-                   -- if pcall(function() love.handlers[name] end) then return love.event.push(name,data,code) end
                    if love.userevent then return love.userevent(name,data,code) end
 		end,
 	}, {
@@ -135,6 +134,14 @@ end
 -----------------------------------------------------------
 -- Default callbacks.
 -----------------------------------------------------------
+love.userevent = function(name, data, code)
+   local function push_if_handle(handle,data,code)
+      if love.handlers[handle] then
+         return love.event.push(handle,data,code)
+      end
+   end
+   pcall(push_if_handle, name, data, code)
+end
 
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end

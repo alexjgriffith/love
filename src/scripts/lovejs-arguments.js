@@ -1,5 +1,9 @@
 // make sure love opens the right file
-Module["arguments"]=["/home/web_user/love/"];
+var lOVE2D_GAME = null;
+if (lOVE2D_GAME)
+    Module["arguments"]=["/home/web_user/love/" + lOVE2D_GAME];
+else
+    Module["arguments"]=["/home/web_user/love/"];
 
 // love_send_event("eval", "(let [js (require :js)] (js.send-custom-json-event :echo \"{}\"))",0)
 

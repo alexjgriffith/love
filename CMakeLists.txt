@@ -1853,17 +1853,18 @@ if(EMSCRIPTEN)
     if(LOVEJS_COMPAT)
 		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2")
 	else()
-		add_definitions("-s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4 -s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2")
+		add_definitions("-sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 -sINVOKE_RUN=0 -sUSE_SDL=2")
 	endif()
 
-        set(CMAKE_EXECUTABLE_SUFFIX ".html")
+        ## set(CMAKE_EXECUTABLE_SUFFIX ".html")
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
         ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
                 "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-arguments.js"
                 "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-js-api.js"
-                "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
-                "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/shell.html"
+                ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
+                "-sFORCE_FILESYSTEM"
+                ## "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/shell.html"
 		"-sFULL_ES2=1" ## we get webgl errors without this
                 "-sUSE_SDL=2"
                 "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM

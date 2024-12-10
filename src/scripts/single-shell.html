@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>LOVEJS</title>
+  </head>
+  <body style="margin:0px;" onload="applicationLoad()">
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+    <script type='text/javascript'>
+      // love2d stuff
+     var LoveState = {
+         game_file: typeof LoveGameFile != 'undefined' ? LoveGameFile : null,
+         game: null,
+         print: (function() {
+             var element = document.getElementById('output');
+          if (element) element.value = ''; // clear browser cache
+          return (...args) => {
+            var text = args.join(' ');
+            console.log(text);
+            if (element) {
+              element.value += text + "\n";
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        canvas: (() => {
+          var canvas = document.getElementById('canvas');
+
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          canvas.addEventListener("webglcontextlost", (e) => { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          return canvas;
+        })(),
+          setStatus: (text) => {
+              const event = new CustomEvent("love2dStatusUpdate", {detail: text});
+              var canvas = document.getElementById("canvas");
+              canvas.dispatchEvent(event);
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: (left) => {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          LoveState.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      LoveState.setStatus('Downloading...');
+      window.onerror = (event) => {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        LoveState.setStatus('Exception thrown, see JavaScript console');
+        // spinnerElement.style.display = 'none';
+        LoveState.setStatus = (text) => {
+          if (text) console.error('[post-exception status] ' + text);
+        };
+      };
+      function applicationLoad (e) {
+          Love(LoveState);
+          const love_send_event = LoveState.love_send_event;
+          const FS = LoveState.FS;
+      }
+
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

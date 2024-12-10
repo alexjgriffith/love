@@ -1849,38 +1849,28 @@ endif()
 
 if(EMSCRIPTEN)
   # add_definitions is for other libraries
-  ##set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    if(LOVEJS_COMPAT)
+  if(LOVEJS_COMPAT)
 		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2")
 	else()
 		add_definitions("-sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 -sINVOKE_RUN=0 -sUSE_SDL=2")
 	endif()
 
-        ## set(CMAKE_EXECUTABLE_SUFFIX ".html")
+        ## set(CMAKE_EXECUTABLE_SUFFIX ".js")
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
         ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
                 "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-arguments.js"
                 "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-js-api.js"
-                ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
                 "-sFORCE_FILESYSTEM"
-                ## "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/shell.html"
 		"-sFULL_ES2=1" ## we get webgl errors without this
                 "-sUSE_SDL=2"
                 "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
                 "-lwebsocket.js" # websocket API
                 "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,ccall,cwrap,UTF8ToString"
-                ## "-sMINIFY_HTML=0"
-                ## "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)	
-		## "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/EmscriptenPersistence.js"
-                ## "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/libraries/js_http/js_http.js"
-                ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/"
-                ## -sSINGLE_FILE
-                ## "--use-preload-plugins"
-                ## "-s MODULARIZE=1"
-		## "-s EXPORT_NAME=\"'Love'\""
-                ##"-sFORCE_FILESYSTEM"
-                ## "-sWASMFS"
+                "-sWASMFS"
+                "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)
+                "-sMODULARIZE=1"
+		"-sEXPORT_NAME=\"'Love'\""
 		## "-s WASM=1"
                 ## "-sMAIN_MODULE=1"
                 ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
@@ -1894,7 +1884,22 @@ if(EMSCRIPTEN)
                 ## "-s RELOCATABLE=1" # needed ldylink.js
                 ## "-sEXPORTED_RUNTIME_METHODS=_emscripten_dlsync_threads"
                 ## _emscripten_dlsync_threads
-	)
+	      )
+        if (LOVEJS_HTML)
+          set(CMAKE_EXECUTABLE_SUFFIX ".html")
+          set(EMSCRIPTEN_ARGS
+            ${EMSCRIPTEN_ARGS}
+            "--shell-file ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/single-shell.html"
+            "-sMINIFY_HTML=0")
+        endif() ## LOVEJS_HTML
+        if(LOVEJS_SINGLE)
+          set(EMSCRIPTEN_ARGS
+            ${EMSCRIPTEN_ARGS}
+            "-sSINGLE_FILE"
+            ## "--embed-file ${LOVEJS_HTML}@/home/web_user/love/"
+            ## "--use-preload-plugins"
+            )
+        endif() ## LOVEJS_SINGLE
 
 	if(NOT LOVEJS_COMPAT)
 		set(EMSCRIPTEN_ARGS

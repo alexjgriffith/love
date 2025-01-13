@@ -238,12 +238,20 @@ static void w_emscripten_websocket_createmeta (lua_State *L){
   luaL_newmetatable(L, "*WEBSOCKET");
   lua_pushvalue(L, -1);
   lua_setfield(L, -2, "__index");
+#if LUA_VERSION_NUM == 510  
   luaL_register(L, NULL, w_emscripten_websocket_lib);
+#else  
+  luaL_newlib(L, w_emscripten_websocket_lib);
+#endif
 }
   
 int luaopen_websockets (lua_State *L)
 {
   w_emscripten_websocket_createmeta(L);
+#if LUA_VERSION_NUM == 510    
   luaL_register(L,"websockets", w_emscripten_websocket_funcs);
+#else  
+  luaL_newlib(L, w_emscripten_websocket_funcs);
+#endif  
   return 1;
 }

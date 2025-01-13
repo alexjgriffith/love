@@ -232,19 +232,23 @@ static DoneAction runlove(int argc, char **argv, int &retval)
 	// Turn the returned boot function into a coroutine and call it until done.
 	lua_newthread(L);
 	lua_pushvalue(L, -2);
-	int nres;
-        #ifdef LOVE_EMSCRIPTEN
+#ifdef LOVE_EMSCRIPTEN
         emscripten_set_main_loop_arg([](void *arg) {
+          int nres;
           lua_State *L = static_cast<lua_State *>(arg);
           int stackpos = lua_gettop(L);
-          
-          if (lua_resume(L, 0) == LUA_YIELD) {
+          if (love::luax_resume(L, 0, &nres) == LUA_YIELD) {
+#if LUA_VERSION_NUM >= 504            
+            lua_pop(L, nres);
+#else          
             lua_pop(L, lua_gettop(L) - stackpos);
+#endif            
           } else {
             emscripten_cancel_main_loop();
 			};
         }, (void *)L, 0, 1);
-	#else
+#else
+        int nres;
         int stackpos = lua_gettop(L);        
 	while (love::luax_resume(L, 0, &nres) == LUA_YIELD)
 #if LUA_VERSION_NUM >= 504

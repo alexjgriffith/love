@@ -60,6 +60,7 @@ else()
 endif()
 option(LOVE_MPG123 "Use mpg123" TRUE)
 option(LOVEJS_COMPAT "Make compatability version of love.js (ie without pthreads)")
+option(LUA_54 "Use Lua_54 if LuaJIT cannot be used" FALSE)
 
 if(LOVE_JIT)
 	if(APPLE)
@@ -168,7 +169,18 @@ if(MEGA)
 		set(LOVE_MOVE_DLLS
 			${LOVE_MOVE_DLLS}
 			${MEGA_LUAJIT_DLL}
+		      )
+        elseif (LUA_54)
+                set(LOVE_LUA_LIBRARY ${MEGA_LUA54})
+
+		set(LOVE_LINK_LIBRARIES
+			${LOVE_LINK_LIBRARIES}
+			${LOVE_LUA_LIBRARY}
 		)
+		set(LOVE_MOVE_DLLS
+			${LOVE_MOVE_DLLS}
+			${LOVE_LUA_LIBRARY}
+		)                      
 	else()
 		set(LOVE_LUA_LIBRARY ${MEGA_LUA51})
 
@@ -245,6 +257,10 @@ Please see https://github.com/love2d/megasource
 		find_package(LuaJIT REQUIRED)
 		set(LOVE_LUA_LIBRARY ${LUAJIT_LIBRARY})
 		set(LOVE_LUA_INCLUDE_DIR ${LUAJIT_INCLUDE_DIR})
+        elseif(LUA_54)
+                find_package(Lua54 REQUIRED)
+		set(LOVE_LUA_LIBRARY ${LUA_LIBRARY})
+		set(LOVE_LUA_INCLUDE_DIR ${LUA_INCLUDE_DIR})
 	else()
 		find_package(Lua51 REQUIRED)
 		set(LOVE_LUA_LIBRARY ${LUA_LIBRARY})

@@ -1866,7 +1866,7 @@ if(EMSCRIPTEN)
                 "-sUSE_SDL=2"
                 "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
                 "-lwebsocket.js" # websocket API
-                "-sEXPORTED_RUNTIME_METHODS=stringToNewUTF8,ccall,cwrap,UTF8ToString"
+                "-sEXPORTED_RUNTIME_METHODS=FS,stringToNewUTF8,ccall,cwrap,UTF8ToString"
                 "-sWASMFS"
                 "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)
                 "-sMODULARIZE=1"
@@ -1874,15 +1874,12 @@ if(EMSCRIPTEN)
 		## "-s WASM=1"
                 ## "-sMAIN_MODULE=1"
                 ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
-		## "-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
-                ## "-s ALLOW_TABLE_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
-		## "-s FORCE_FILESYSTEM=1" # to fix Module.addDependency not existing
+		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
+                "-sASSERTIONS"
 		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
-                ## "-ldylink.js" # getMemory
-                ## "-sEXPORTED_RUNTIME_METHODS=getMemory,stringToNewUTF8,ccall,cwrap,UTF8ToString"
-                ##"-sEXPORTED_FUNCTIONS=__JS_http_push_event,__JS_eval"
-                ## "-s RELOCATABLE=1" # needed ldylink.js
-                ## "-sEXPORTED_RUNTIME_METHODS=_emscripten_dlsync_threads"
+                "-ldylink.js" # getMemory
+                "-sRELOCATABLE=1" # needed ldylink.js
+                "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$loadDynamicLibrary'"
                 ## _emscripten_dlsync_threads
 	      )
         if (LOVEJS_HTML)

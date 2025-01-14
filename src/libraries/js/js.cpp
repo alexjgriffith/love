@@ -91,7 +91,7 @@ static const struct luaL_Reg JS_funcs [] = {
 
 int luaopen_js (lua_State *L)
 {
-#if LUA_VERSION_NUM == 510      
+#if LUA_VERSION_NUM == 501
   luaL_register(L,"js", JS_funcs);
 #else  
   luaL_newlib(L, JS_funcs);

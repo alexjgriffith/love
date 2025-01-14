@@ -238,7 +238,7 @@ static DoneAction runlove(int argc, char **argv, int &retval)
           lua_State *L = static_cast<lua_State *>(arg);
           int stackpos = lua_gettop(L);
           if (love::luax_resume(L, 0, &nres) == LUA_YIELD) {
-#if LUA_VERSION_NUM >= 504            
+#if defined (LUA_VERSION_NUM) && LUA_VERSION_NUM >= 504
             lua_pop(L, nres);
 #else          
             lua_pop(L, lua_gettop(L) - stackpos);

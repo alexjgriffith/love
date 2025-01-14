@@ -1883,6 +1883,7 @@ if(EMSCRIPTEN)
                 "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
                 "-lwebsocket.js" # websocket API
                 "-sEXPORTED_RUNTIME_METHODS=FS,stringToNewUTF8,ccall,cwrap,UTF8ToString"
+                ## "-sEXPORTED_FUNCTIONS=emscripten_dlsync_threads"
                 "-sWASMFS"
                 "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)
                 "-sMODULARIZE=1"
@@ -1917,7 +1918,7 @@ if(EMSCRIPTEN)
 	if(NOT LOVEJS_COMPAT)
 		set(EMSCRIPTEN_ARGS
 		  ${EMSCRIPTEN_ARGS}
-                  ## "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
+                  "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
 		  "-s USE_PTHREADS=1"
 		  "-s PTHREAD_POOL_SIZE=4"	
 		      )

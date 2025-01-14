@@ -240,8 +240,8 @@ static void w_emscripten_websocket_createmeta (lua_State *L){
   lua_setfield(L, -2, "__index");
 #if LUA_VERSION_NUM == 510  
   luaL_register(L, NULL, w_emscripten_websocket_lib);
-#else  
-  luaL_newlib(L, w_emscripten_websocket_lib);
+#else
+  luaL_setfuncs(L, w_emscripten_websocket_lib,0);
 #endif
 }
   

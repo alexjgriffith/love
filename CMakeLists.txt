@@ -161,20 +161,23 @@ if(MEGA)
 		set(LOVE_MOVE_DLLS
 			${LOVE_MOVE_DLLS}
 			${MEGA_LUAJIT_DLL}
-		)
-	else()
-		set(LOVE_LUA_LIBRARY ${MEGA_LUA51})
-
-		set(LOVE_LINK_LIBRARIES
-			${LOVE_LINK_LIBRARIES}
-			${LOVE_LUA_LIBRARY}
-		)
-		set(LOVE_MOVE_DLLS
-			${LOVE_MOVE_DLLS}
-			${LOVE_LUA_LIBRARY}
-		)
-		# MEGA_LUA51 is a CMake target, so includes are handled
-		# automatically.
+		      )
+        else ()
+          if(LUA_54)
+            set(LOVE_LUA_LIBRARY ${MEGA_LUA54})
+          else ()
+            set(LOVE_LUA_LIBRARY ${MEGA_LUA51})
+          endif() ## LUA_54
+	  set(LOVE_LINK_LIBRARIES
+	    ${LOVE_LINK_LIBRARIES}
+	    ${LOVE_LUA_LIBRARY}
+	  )
+	  set(LOVE_MOVE_DLLS
+	    ${LOVE_MOVE_DLLS}
+	    ${LOVE_LUA_LIBRARY}
+	  )                      
+	  # MEGA_LUA51 / MEGA_LUA54 are CMake targets, so includes are handled
+	  # automatically.
 	endif()
 else()
 	if(MSVC)
@@ -239,7 +242,11 @@ Please see https://github.com/love2d/megasource
 		set(LOVE_LUA_LIBRARY ${LUAJIT_LIBRARY})
 		set(LOVE_LUA_INCLUDE_DIR ${LUAJIT_INCLUDE_DIR})
 	else()
-		find_package(Lua51 REQUIRED)
+                if(LUA_54)
+                     find_package(Lua54 REQUIRED)
+                else()
+                     find_package(Lua51 REQUIRED)
+                endif()
 		set(LOVE_LUA_LIBRARY ${LUA_LIBRARY})
 		set(LOVE_LUA_INCLUDE_DIR ${LUA_INCLUDE_DIR})
 	endif()

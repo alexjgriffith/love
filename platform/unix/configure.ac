@@ -142,3 +142,4 @@ AC_CONFIG_FILES([
 AC_OUTPUT
 
 chmod 755 platform/unix/debian/rules
+ 

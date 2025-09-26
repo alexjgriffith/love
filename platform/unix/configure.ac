@@ -51,7 +51,7 @@ AS_VAR_IF([enable_stbi_sse2_override], [no], [], #else
 AC_ARG_WITH([lua], [AS_HELP_STRING([--with-lua], [Select the lua implementation])],
 	[], [with_lua=lua])
 AC_ARG_WITH([luaversion], [AS_HELP_STRING([--with-luaversion], [Select the lua version])],
-	[], [with_luaversion=5.1])
+	[], [with_luaversion=5.4])
 
 with_clean_luaversion=`printf ${with_luaversion} | sed 's/\.//g'`
 

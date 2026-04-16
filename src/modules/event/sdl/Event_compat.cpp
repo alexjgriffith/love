@@ -18,6 +18,8 @@
  * 3. This notice may not be removed or altered from any source distribution.
  **/
 
+#include <SDL_log.h>
+
 #include "Event.h"
 
 #include "filesystem/DroppedFile.h"
@@ -443,14 +445,17 @@ Message *Event::convert(const SDL_Event &e)
                 // *
                 // we could add a custom case for each e->code;
                 // how do we handle the memory created?
+                SDL_Log("User event created");
                 txt = (const char *) e.user.data1;
                 txt2 = (const char *) e.user.data2;
                 vargs.emplace_back(txt, strlen(txt));
                 vargs.emplace_back(txt2, strlen(txt2));
                 vargs.emplace_back((double) e.user.code);
                 msg = new Message("userevent", vargs);
+                SDL_Log("Created message and freeing user event");
                 SDL_free(e.user.data1);
                 SDL_free(e.user.data2);
+                SDL_Log("Data Free");
                 break;
 #endif // __EMSCIRPTEN__
 	default:

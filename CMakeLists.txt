@@ -1880,7 +1880,8 @@ if(EMSCRIPTEN)
                 "-sFORCE_FILESYSTEM"
 		"-sFULL_ES2=1" ## we get webgl errors without this
                 "-sUSE_SDL=2"
-                "-s ALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
+                "-sALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
+                "-sMAXIMUM_MEMORY=1gb" # fixes issue with threads on ios
                 "-lwebsocket.js" # websocket API
                 "-sEXPORTED_RUNTIME_METHODS=FS,stringToNewUTF8,ccall,cwrap,UTF8ToString"
                 ## "-sEXPORTED_FUNCTIONS=emscripten_dlsync_threads"
@@ -1894,6 +1895,7 @@ if(EMSCRIPTEN)
 		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
                 "-sASSERTIONS"
 		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
+                ### RELOCATABLE was depreciated in 5.0.3
                 "-ldylink.js" # getMemory
                 "-sRELOCATABLE=1" # needed ldylink.js
                 "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$loadDynamicLibrary'"

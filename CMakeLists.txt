@@ -1877,6 +1877,7 @@ if(EMSCRIPTEN)
 	set(EMSCRIPTEN_ARGS	
                 "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-arguments.js"
                 "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-js-api.js"
+                ## "--disable-shared"
                 "-sFORCE_FILESYSTEM"
 		"-sFULL_ES2=1" ## we get webgl errors without this
                 "-sUSE_SDL=2"
@@ -1890,15 +1891,15 @@ if(EMSCRIPTEN)
                 "-sMODULARIZE=1"
 		"-sEXPORT_NAME=\"'Love'\""
 		## "-s WASM=1"
-                ## "-sMAIN_MODULE=1"
                 ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
 		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
                 "-sASSERTIONS"
 		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
-                ### RELOCATABLE was depreciated in 5.0.3
-                "-ldylink.js" # getMemory
-                "-sRELOCATABLE=1" # needed ldylink.js
-                "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$loadDynamicLibrary'"
+                ### RELOCATABLE was depreciated in 5.0.3 , use MAIN_MODULE?
+                ## "-sMAIN_MODULE=1"
+                # "-ldylink.js" # getMemory
+                # "-sRELOCATABLE=1" # needed ldylink.js
+                # "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$loadDynamicLibrary'"
                 ## _emscripten_dlsync_threads
 	      )
         if (LOVEJS_HTML)

@@ -3,7 +3,7 @@
 
 // SDL
 #include <SDL_events.h>
-#include <SDL_log.h>
+// #include <SDL_log.h>
 
 extern "C" {
 #include "lua.h"
@@ -41,18 +41,22 @@ static int JS_lua_send_event (lua_State *L) {
 }
   
 EMSCRIPTEN_KEEPALIVE
-int JS_send_event (char * handle, char * data, int code){
+int JS_send_event (const char * handle, const char * data, int code){
   SDL_Event event;
+  SDL_zero(event);
   event.type = SDL_USEREVENT;
-  event.user.data1 = (char *) SDL_malloc(SDL_strlen(handle) );
-  SDL_memcpy(event.user.data1,handle,SDL_strlen(handle));
-  ((char *) event.user.data1)[SDL_strlen(handle)] = '\0';
-  event.user.data2 = (char *) SDL_malloc(SDL_strlen(data) );
-  SDL_memcpy(event.user.data2,data,SDL_strlen(data));
-  ((char *) event.user.data2)[SDL_strlen(data)] = '\0';
+  // SDL_zero(event);
+  event.user.data1 = SDL_strdup(handle);
+  event.user.data2 = SDL_strdup(data);
+  // event.user.data1 = (char *) SDL_malloc(SDL_strlen(handle) );
+  // SDL_memcpy(event.user.data1,handle,SDL_strlen(handle));
+  // ((char *) event.user.data1)[SDL_strlen(handle)] = '\0';
+  // event.user.data2 = (char *) SDL_malloc(SDL_strlen(data) );
+  // SDL_memcpy(event.user.data2,data,SDL_strlen(data));
+  // ((char *) event.user.data2)[SDL_strlen(data)] = '\0';
   event.user.code = code;
   SDL_PushEvent(&event);
-  SDL_Log("Assembled Event - js.cpp, %s, %s, %s, %s", handle, data, event.user.data1, event.user.data2);
+  // SDL_Log("Assembled Event - js.cpp, %s, %s, %s, %s", handle, data, event.user.data1, event.user.data2);
   // handle and data get freed when this call ends
   return 0;
 }
@@ -60,8 +64,8 @@ int JS_send_event (char * handle, char * data, int code){
 int example_event (lua_State *L){
   SDL_Event event;
   event.type = SDL_USEREVENT;
-  event.user.data1 = (char *) malloc(sizeof(char) * 16);
-  event.user.data2 = (char *) malloc(sizeof(char) * 16);
+  event.user.data1 = (char *) SDL_malloc(sizeof(char) * 16);
+  event.user.data2 = (char *) SDL_malloc(sizeof(char) * 16);
   ((char *) event.user.data1)[0]='t';
   ((char *) event.user.data1)[1]='e';
   ((char *) event.user.data1)[2]='s';

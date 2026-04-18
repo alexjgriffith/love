@@ -468,8 +468,14 @@ Message *Event::convert(const SDL_Event &e)
                 vargs.emplace_back(txt2, strlen(txt2));
                 vargs.emplace_back((double) e.user.code);
                 msg = new Message("userevent", vargs);
-                SDL_free(e.user.data1);
-                SDL_free(e.user.data2);
+                if (e.user.data1 != nullptr){
+                  SDL_free(e.user.data1);
+                }
+                if (e.user.data2 != nullptr){
+                  SDL_free(e.user.data2);
+                }
+                // SDL_free(e.user.data1);
+                // SDL_free(e.user.data2);
                 break;
 #endif // __EMSCIRPTEN__                
 	default:

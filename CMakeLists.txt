@@ -1866,9 +1866,9 @@ endif()
 if(EMSCRIPTEN)
   # add_definitions is for other libraries
   if(LOVEJS_COMPAT)
-		add_definitions("-s FULL_ES2=1 -s INVOKE_RUN=0 -sUSE_SDL=2")
+		add_definitions("-fwasm-exceptions -sSUPPORT_LONGJMP=wasm -sUSE_SDL=2")
 	else()
-		add_definitions("-sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 -sINVOKE_RUN=0 -sUSE_SDL=2")
+		add_definitions("-fwasm-exceptions -sSUPPORT_LONGJMP=wasm -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 -sINVOKE_RUN=0 -sUSE_SDL=2")
 	endif()
 
         ## set(CMAKE_EXECUTABLE_SUFFIX ".js")
@@ -1880,6 +1880,7 @@ if(EMSCRIPTEN)
                 ## "--disable-shared"
                 "-sFORCE_FILESYSTEM"
 		"-sFULL_ES2=1" ## we get webgl errors without this
+                ## "-sFULL_ES3=1" ## INVALID_ENUM
                 "-sUSE_SDL=2"
                 "-sALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
                 "-sMAXIMUM_MEMORY=1gb" # fixes issue with threads on ios
@@ -1893,9 +1894,11 @@ if(EMSCRIPTEN)
 		"-sEXPORT_NAME=\"'Love'\""
 		## "-s WASM=1"
                 ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
-		"-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
+		## "-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
                 "-sASSERTIONS"
-		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined
+                "-fwasm-exceptions"
+                "-sSUPPORT_LONGJMP=wasm"
+		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined. Error not supported by WASMFS?
                 ### RELOCATABLE was depreciated in 5.0.3 , use MAIN_MODULE?
                 ## "-sMAIN_MODULE=1"
                 # "-ldylink.js" # getMemory

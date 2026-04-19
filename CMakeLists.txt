@@ -1885,6 +1885,7 @@ if(EMSCRIPTEN)
                 "-sMAXIMUM_MEMORY=1gb" # fixes issue with threads on ios
                 "-lwebsocket.js" # websocket API
                 "-sEXPORTED_RUNTIME_METHODS=FS,stringToNewUTF8,ccall,cwrap,UTF8ToString"
+                "-sEXPORTED_FUNCTIONS=_main,_JS_send_event"
                 ## "-sEXPORTED_FUNCTIONS=emscripten_dlsync_threads"
                 "-sWASMFS"
                 "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)

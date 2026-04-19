@@ -63,7 +63,7 @@
 #ifdef LOVE_ENABLE_ENET
 #	include "libraries/enet/lua-enet.h"
 #endif
-#ifdef __EMSCRIPTEN__
+#ifdef LOVE_EMSCRIPTEN
 #	include "libraries/js/js.h"
 #	include "libraries/websockets/wrap_websockets.h"
 #endif
@@ -484,7 +484,7 @@ int luaopen_love(lua_State *L)
 	lua_pushstring(L, "Android");
 #elif defined(LOVE_LINUX)
 	lua_pushstring(L, "Linux");
-#elif defined(EMSCRIPTEN)
+#elif defined(LOVE_EMSCRIPTEN)
 	lua_pushstring(L, "Web");        
 #else
 	lua_pushstring(L, "Unknown");
@@ -529,7 +529,7 @@ int luaopen_love(lua_State *L)
 #ifdef LOVE_ENABLE_ENET
 	love::luax_preload(L, luaopen_enet, "enet");
 #endif
-#ifdef EMSCRIPTEN
+#ifdef LOVE_EMSCRIPTEN
 	love::luax_preload(L, luaopen_js, "js");
         love::luax_preload(L, luaopen_websockets, "websockets");
 #endif        

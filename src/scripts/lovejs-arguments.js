@@ -8,7 +8,7 @@ if (Module["print"]){
         Module["arguments"]=["/home/web_user/love/" + lOVE2D_GAME];
     }
     else if(Module["game_file"]){
-        Module["print"]("Reading Uploaded .love file");
+        Module["print"]("Reading embeded .love file");
         Module["arguments"]=["/home/web_user/love/game.love"];
     }
     else {

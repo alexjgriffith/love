@@ -165,13 +165,17 @@ bool Filesystem::setIdentity(const char *ident, bool appendToPath)
 
 	// Generate the full path to the game save folder.
 	save_path_full = std::string(getAppdataDirectory()) + std::string(LOVE_PATH_SEPARATOR);
+#ifdef LOVE_EMSCRIPTEN
+        save_path_full = std::string("/home/web_user/love/savedir/");
+#else        
 	if (fused)
 		save_path_full += std::string(LOVE_APPDATA_PREFIX) + save_identity;
 	else
 		save_path_full += save_path_relative;
 
 	save_path_full = normalize(save_path_full);
-
+#endif // LOVE_EMSCRIPTEN
+        
 #ifdef LOVE_ANDROID
 	if (save_identity == "")
 		save_identity = "unnamed";

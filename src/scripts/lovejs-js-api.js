@@ -29,7 +29,6 @@ var love_send_event = Module.cwrap('JS_send_event', 'number', ['string', 'string
 Module["love_send_event"] = love_send_event;
 Module["FS"] = FS;
 
-
 base64_decode = (function() {
     var T = new Uint8Array(128),
 	i = 0;
@@ -62,10 +61,27 @@ base64_decode = (function() {
     };
 })();
 
+
+
+function addSaveDir () {
+    FS.mount(IDBFS,{autoPersist: true },"/home/web_user/love/savedir/");
+    FS.syncfs(true, function (err) {
+        console.log(err);
+    });
+}
+
+Module["addSaveDir"]=addSaveDir;
+
+// const root = "/home/web_user/love/"
+// createPath(root);
+
 if (Module["game_file"]){
+    // this is done in preload, but when we are loading an embeded file we don't execute
+    // a prelaod
     FS.createPath("/", "home", true, true);
     FS.createPath("/home", "web_user", true, true);
     FS.createPath("/home/web_user", "love", true, true);
+    LoveState['FS_createPath']("/home/web_user/love", "savedir", true, true);
     const fileBuffer = base64_decode(Module["game_file"]);
     FS.createDataFile('/home/web_user/love/game.love', 0, fileBuffer, true,true,true);
 }

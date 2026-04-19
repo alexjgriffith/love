@@ -1866,9 +1866,10 @@ endif()
 if(EMSCRIPTEN)
   # add_definitions is for other libraries
   if(LOVEJS_COMPAT)
-		add_definitions("-fwasm-exceptions -sSUPPORT_LONGJMP=wasm -sUSE_SDL=2")
-	else()
-		add_definitions("-fwasm-exceptions -sSUPPORT_LONGJMP=wasm -sUSE_PTHREADS=1 -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 -sINVOKE_RUN=0 -sUSE_SDL=2")
+		add_definitions("-fwasm-exceptions -sSUPPORT_LONGJMP=wasm -sUSE_SDL=2 -sUSE_SQLITE3=1")
+	      else()
+                ## -sPTHREAD_POOL_SIZE=4 -sFULL_ES2=1 -sINVOKE_RUN=0 
+		add_definitions("-fwasm-exceptions -sSUPPORT_LONGJMP=wasm -sUSE_PTHREADS=1 -sUSE_SDL=2 -sUSE_SQLITE3=1")
 	endif()
 
         ## set(CMAKE_EXECUTABLE_SUFFIX ".js")
@@ -1882,29 +1883,24 @@ if(EMSCRIPTEN)
 		"-sFULL_ES2=1" ## we get webgl errors without this
                 ## "-sFULL_ES3=1" ## INVALID_ENUM
                 "-sUSE_SDL=2"
+                "-sUSE_SQLITE3=1"
                 "-sALLOW_MEMORY_GROWTH=1" # for dynamic resizing of memory, should not have a performance impact as using WASM
                 "-sMAXIMUM_MEMORY=1gb" # fixes issue with threads on ios
                 "-lwebsocket.js" # websocket API
                 "-sEXPORTED_RUNTIME_METHODS=FS,stringToNewUTF8,ccall,cwrap,UTF8ToString"
                 "-sEXPORTED_FUNCTIONS=_main,_JS_send_event"
-                ## "-sEXPORTED_FUNCTIONS=emscripten_dlsync_threads"
-                "-sWASMFS"
-                "-s CASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)
+                "-sCASE_INSENSITIVE_FS=1" # I think this is probably what most users expect (sorry linuxers)
                 "-sMODULARIZE=1"
 		"-sEXPORT_NAME=\"'Love'\""
-		## "-s WASM=1"
                 ## "--preload-file /home/alexjgriffith/Github/lovejs-update/love.js/game@/home/web_user/love/"
 		## "-s DISABLE_EXCEPTION_CATCHING=0" # Might be worth building a whitelist for EXCEPTION_CATCHING_WHITELIST
                 "-sASSERTIONS"
                 "-fwasm-exceptions"
                 "-sSUPPORT_LONGJMP=wasm"
-		## "-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined. Error not supported by WASMFS?
-                ### RELOCATABLE was depreciated in 5.0.3 , use MAIN_MODULE?
-                ## "-sMAIN_MODULE=1"
-                # "-ldylink.js" # getMemory
-                # "-sRELOCATABLE=1" # needed ldylink.js
-                # "-sDEFAULT_LIBRARY_FUNCS_TO_INCLUDE='$loadDynamicLibrary'"
-                ## _emscripten_dlsync_threads
+                ## "-sWASMFS"
+                ## "-sJSPI=1" ## async needed for OPFS ## getting an error about an unresolved promise?
+                ## "-lopfs.js" ## storage lib form WASM uses OPFS
+		"-lidbfs.js" # to fix the ReferenceError: IDBFS is not defined. Error not supported by WASMFS?
 	      )
         if (LOVEJS_HTML)
           set(CMAKE_EXECUTABLE_SUFFIX ".html")
@@ -1925,7 +1921,7 @@ if(EMSCRIPTEN)
 	if(NOT LOVEJS_COMPAT)
 		set(EMSCRIPTEN_ARGS
 		  ${EMSCRIPTEN_ARGS}
-                  "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
+                  ## "-sERROR_ON_UNDEFINED_SYMBOLS=0" # for -ldylink.js
 		  "-s USE_PTHREADS=1"
 		  "-s PTHREAD_POOL_SIZE=4"	
 		      )

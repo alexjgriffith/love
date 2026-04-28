@@ -34,7 +34,10 @@ if (Module["print"]){
         var canvas = Module["canvas"]; // - for some reason we were trying to access a function
         canvas.dispatchEvent(event);
     }
-    
+
+    function love_mkdir (dir){
+        FS.mkdir(dir);
+    }
 }
 else {
     Module["print"] = (x)=>console.log(x);

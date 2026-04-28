@@ -66,6 +66,7 @@
 #ifdef LOVE_EMSCRIPTEN
 #	include "libraries/js/js.h"
 #	include "libraries/websockets/wrap_websockets.h"
+#	include "libraries/sqlite3/lsqlite3.h"
 #endif
 #ifdef LOVE_ENABLE_LUA53
 #	include "libraries/lua53/lutf8lib.h"
@@ -532,6 +533,7 @@ int luaopen_love(lua_State *L)
 #ifdef LOVE_EMSCRIPTEN
 	love::luax_preload(L, luaopen_js, "js");
         love::luax_preload(L, luaopen_websockets, "websockets");
+        love::luax_preload(L, luaopen_sqlite3, "__sqlite"); // experimental
 #endif        
 #ifdef LOVE_ENABLE_LUA53
 	love::luax_preload(L, luaopen_luautf8, "utf8");

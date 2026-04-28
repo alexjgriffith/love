@@ -11,6 +11,8 @@ extern "C" {
 #include "lauxlib.h"
 }
 
+#define JS_VERSION "1.0.1"
+
 // static const char js_http_javascript[] =
 // #include "js.js"
 // ;
@@ -20,6 +22,11 @@ extern "C" {
 // ;
 
 extern "C"{
+
+static int JS_version(lua_State *L){
+  lua_pushstring(L, JS_VERSION);
+  return 1;
+}
   
 static int JS_call (lua_State *L) {
   const char * str = luaL_checkstring (L, 1);
@@ -90,6 +97,7 @@ static const struct luaL_Reg JS_funcs [] = {
   {"send-custom-json-event", JS_lua_send_custom_json_event},
   {"send-event", JS_lua_send_event},
   {"example-event", example_event},
+  {"version", JS_version},
   {NULL, NULL}        // sentinel */
 };
 

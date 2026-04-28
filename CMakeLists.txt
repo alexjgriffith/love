@@ -1331,6 +1331,20 @@ set(LOVE_SRC_3P_WEBSOCKETS
 add_library(love_3p_websockets ${LOVE_SRC_3P_WEBSOCKETS})
 target_link_libraries(love_3p_websockets ${LOVE_LUA_LIBRARY})
 
+#
+# lsqlite3
+#
+
+set(LOVE_SRC_3P_LSQLITE3
+  src/libraries/sqlite3/luasql.cpp
+  src/libraries/sqlite3/luasql.h
+  src/libraries/sqlite3/lsqlite3.cpp
+  src/libraries/sqlite3/lsqlite3.h)
+
+add_library(love_3p_lsqlite3 ${LOVE_SRC_3P_LSQLITE3})
+target_link_libraries(love_3p_lsqlite3 ${LOVE_LUA_LIBRARY})
+
+
 endif()
 
 #
@@ -1782,6 +1796,7 @@ set(LOVE_3P
 	love_3p_xxhash
         love_3p_js # if emscirpten
         love_3p_websockets
+        love_3p_lsqlite3
       )
       
 

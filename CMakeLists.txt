@@ -1336,10 +1336,11 @@ target_link_libraries(love_3p_websockets ${LOVE_LUA_LIBRARY})
 #
 
 set(LOVE_SRC_3P_LSQLITE3
-  src/libraries/sqlite3/luasql.cpp
-  src/libraries/sqlite3/luasql.h
+  # src/libraries/sqlite3/luasql.cpp
+  # src/libraries/sqlite3/luasql.h
   src/libraries/sqlite3/lsqlite3.cpp
-  src/libraries/sqlite3/lsqlite3.h)
+  # src/libraries/sqlite3/lsqlite3.h
+)
 
 add_library(love_3p_lsqlite3 ${LOVE_SRC_3P_LSQLITE3})
 target_link_libraries(love_3p_lsqlite3 ${LOVE_LUA_LIBRARY})
@@ -1891,8 +1892,8 @@ if(EMSCRIPTEN)
 	add_executable(${LOVE_EXE_NAME} src/love.cpp)
         ## "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}//src/scripts/JS_network.js"
 	set(EMSCRIPTEN_ARGS	
-                "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-arguments.js"
-                "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-js-api.js"
+                "--pre-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-pre.js"
+                "--post-js ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts/lovejs-post.js"
                 ## "--disable-shared"
                 "-sFORCE_FILESYSTEM"
 		"-sFULL_ES2=1" ## we get webgl errors without this

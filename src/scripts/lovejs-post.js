@@ -64,24 +64,31 @@ base64_decode = (function() {
 
 
 function addSaveDir () {
-    FS.mount(IDBFS,{autoPersist: true },"/home/web_user/love/savedir/");
-    FS.syncfs(true, function (err) {
-        console.log(err);
-    });
+    if (typeof ENVIRONMENT_IS_PTHREAD === 'undefined' || !ENVIRONMENT_IS_PTHREAD) {
+        Module.addRunDependency('IDBFS_sync');
+        FS.mount(IDBFS,{autoPersist: true },"/home/web_user/savedir/");
+        FS.syncfs(true, function (err) {
+            if(err){
+                console.log(err);
+            }
+            else {
+                Module.removeRunDependency('IDBFS_sync');
+            }
+        });
+    }
 }
 
-Module["addSaveDir"]=addSaveDir;
+// Module["addSaveDir"]=addSaveDir;
 
 // const root = "/home/web_user/love/"
 // createPath(root);
 
+FS.createPath("/", "home", true, true);
+FS.createPath("/home", "web_user", true, true);
+FS.createPath("/home/web_user", "love", true, true);
+LoveState['FS_createPath']("/home/web_user/", "savedir", true, true);
 if (Module["game_file"]){
-    // this is done in preload, but when we are loading an embeded file we don't execute
-    // a prelaod
-    FS.createPath("/", "home", true, true);
-    FS.createPath("/home", "web_user", true, true);
-    FS.createPath("/home/web_user", "love", true, true);
-    LoveState['FS_createPath']("/home/web_user/love", "savedir", true, true);
     const fileBuffer = base64_decode(Module["game_file"]);
     FS.createDataFile('/home/web_user/love/game.love', 0, fileBuffer, true,true,true);
 }
+addSaveDir();

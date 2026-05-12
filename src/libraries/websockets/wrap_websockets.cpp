@@ -213,7 +213,7 @@ int w_emscripten_websocket_is_supported(lua_State *L){
 
 } // extern C
 
-//library to be registe red
+//library to be registered
 static const struct luaL_Reg w_emscripten_websocket_funcs [] = {
   {"new", w_emscripten_websocket_new},
   {"deinitialize", w_emscripten_websocket_deinitialize},

@@ -178,8 +178,8 @@ bool Filesystem::setIdentity(const char *ident, bool appendToPath)
 	save_path_full = normalize(save_path_full);
 
 #ifdef LOVE_EMSCRIPTEN
-        save_path_full = std::string("/home/web_user/love/savedir/") + save_identity + "/";
-        EM_ASM({love_mkdir(UTF8ToString($0));}, save_path_full.c_str());
+        save_path_full = std::string("/home/web_user/savedir/") + save_identity + "/";
+        // EM_ASM({love_mkdir(UTF8ToString($0));}, save_path_full.c_str());
 #endif // LOVE_EMSCRIPTEN
         
 #ifdef LOVE_ANDROID
